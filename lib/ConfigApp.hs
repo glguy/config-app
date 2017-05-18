@@ -5,25 +5,17 @@ module ConfigApp (
 ) where
 
 
-import Control.Monad.IO.Class (MonadIO(..))
-import Control.Monad.Trans.Class
-import Control.Concurrent.MVar (takeMVar, putMVar, newEmptyMVar)
-
 import GHCJS.DOM (syncPoint, currentDocumentUnchecked)
 import GHCJS.DOM.Types
-import GHCJS.DOM.Document (getHeadUnsafe, getBodyUnsafe, createElement, createTextNode)
 import GHCJS.DOM.NonElementParentNode
-import GHCJS.DOM.Element
 import GHCJS.DOM.HTMLElement
-import GHCJS.DOM.Node (appendChild)
-import GHCJS.DOM.EventM (on, mouseClientXY)
+import GHCJS.DOM.EventM (on)
 import GHCJS.DOM.GlobalEventHandlers as E
 import qualified GHCJS.DOM.HTMLTextAreaElement as TextArea
 
 import qualified Data.Text as T
 import Data.Semigroup
 import Data.Foldable
-import Control.Exception
 
 import Config
 import Config.Schema
@@ -47,6 +39,7 @@ nestedMapSpec = sectionsSpec "coord" $
      y <- reqSection "y" "y coordinate"
      return (x,y)
 
+addDocumentation :: MonadJSM m => Document -> m ()
 addDocumentation doc =
   do pre <- getThing doc HTMLPreElement "documentation"
      setInnerText pre (Just (show (generateDocs demoSpec)))
@@ -59,7 +52,6 @@ getThing doc con eltId =
 jsMain :: JSM ()
 jsMain = do
     doc <- currentDocumentUnchecked
-    body <- getBodyUnsafe doc
 
     addDocumentation doc
 
