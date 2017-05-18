@@ -28,6 +28,7 @@ import Control.Exception
 import Config
 import Config.Schema
 
+
 demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
 demoSpec = sectionsSpec "top-level configuration" $
   do nums <- optSection' "numbers" (oneOrList valuesSpec)
@@ -55,8 +56,8 @@ getThing doc con eltId =
   do Just e <- getElementById doc eltId
      return $! uncheckedCastTo con e
 
-helloMain :: JSM ()
-helloMain = do
+jsMain :: JSM ()
+jsMain = do
     doc <- currentDocumentUnchecked
     body <- getBodyUnsafe doc
 

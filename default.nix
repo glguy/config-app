@@ -26,6 +26,8 @@ let
 in
   pkgs.runCommand "app" { inherit app; } ''
     mkdir $out
-    cp ${app}/index.html $out/index.html
-    cp ${app}/bin/config-app.jsexe/*.js $out/
+    cp ${app}/index.html $out/
+    cp ${app}/prism.css $out/
+    cp ${app}/prism.js $out/
+    cp ${app}/bin/config-app-js.jsexe/*.js $out/
   ''

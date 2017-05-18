@@ -4,15 +4,33 @@
     <script src="rts.js"></script>
     <script src="lib.js"></script>
     <script src="out.js"></script>
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css'>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js'></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/languages/haskell.min.js'></script>
+    <link rel='stylesheet' href='prism.css'>
+    <script src='prism.js'></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+    <style>
+      #configinput {
+         font-family: monospace;
+         font-size: large;
+      }
+    </style>
+
   </head>
   <body>
-        <h1>Config-schema example harness</h1>
+          <div class="container">
+        <h1>Config-schema example</h1>
+        <p>This page demonstrates the
+        <a target="_blank" href='https://hackage.haskell.org/package/config-value'>config-value</a> language
+        and the
+        <a target="_blank" href='https://hackage.haskell.org/package/config-schema'>config-schema</a> schema
+        library. Try editing the configuration file below!
+
+
         <h2>Schema source code</h2>
-<pre><code class='haskell'>
-demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
+<pre class="language-haskell"><code>demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
 demoSpec = sectionsSpec "top-level configuration" $
   do nums &lt;- optSection' "numbers" (oneOrList valuesSpec)
              "Try out the number syntax"
@@ -28,11 +46,31 @@ nestedMapSpec :: ValueSpecs (Int, Int)
 nestedMapSpec = sectionsSpec "coord" $
   do x &lt;- reqSection "x" "x coordinate"
      y &lt;- reqSection "y" "y coordinate"
-     return (x,y)
-</code></pre>
-        <h2>Generated schema documentation</h2>
-        <pre><code class='haskell'>show (generateDocs demoSpec)</code></pre>
+     return (x,y)</code></pre>
+
+        <h2>Generated documentation</h2>
+        <pre class="language-haskell"><code>show (generateDocs demoSpec)</code></pre>
+        <pre class="z-depth-2" id='documentation'></pre>
+
+        <h2>Interactive demonstration</h2>
+        <div class="row">
+                <div class="input-field col s12">
+        <textarea class="materialize-textarea" id='configinput' rows='20' cols='40'>
+numbers: [1.0,2e5,-3]
+yes-or-no: yes
+string: "a string literal"
+coordinates:
+  * x: 10
+    y: 20
+  * x: 3
+    y: 5</textarea>
+                  <label for='configinput'>Configuration file</label>
+                </div></div>
+        <pre class="z-depth-2" id='output'></pre>
+        <div class="row">
+           <a class="waves-effect waves-light btn l2" id='parse'>Parse</a>
+        </div>
+        </div>
   </body>
   <script language="javascript" src="runmain.js" defer></script>
-  <script>hljs.initHighlightingOnLoad();</script>
 </html>

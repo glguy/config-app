@@ -7,19 +7,37 @@ license-file:        LICENSE
 author:              Eric Mertens
 maintainer:          eric.mertens@galois.com
 category:            Web
-build-type:          Simple
+build-type:          Custom
 extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
-executable config-app
-  main-is:             Main.hs
-  build-depends:       base
-                     , config-schema
-                     , config-value
-                     , ghcjs-base
+custom-setup
+  setup-depends : base, Cabal, cabal-macosx
+
+executable config-app-wkwebview
+  main-is:             WebKit.hs
+  build-depends:       base, config-app, jsaddle-wkwebview >=0.8 && <0.9
+  if impl(ghcjs)
+    buildable: False
+  ghc-options: -threaded
+  default-language:    Haskell2010
+
+executable config-app-js
+  main-is:             GhcJs.hs
+  build-depends:       base, config-app
+  if !impl(ghcjs)
+    buildable: False
+  default-language:    Haskell2010
+
+library
+  exposed-modules:   ConfigApp
+  hs-source-dirs:    lib
+  build-depends:       base >=4.8 && <4.11
+                     , config-schema >=0.3.1 && <0.4
+                     , config-value  >=0.6.1 && <0.7
                      , ghcjs-dom
                      , semigroupoids
                      , semigroups
                      , text
-                     , transformers
+                     , transformers >= 0.4 && <0.6
   default-language:    Haskell2010
