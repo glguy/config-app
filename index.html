@@ -1,12 +1,38 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <script src="all.js"></script>
+    <script src="rts.js"></script>
+    <script src="lib.js"></script>
+    <script src="out.js"></script>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css'>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/languages/haskell.min.js'></script>
   </head>
   <body>
-    <textarea id="area">
-      HI!
-    </textarea>
-    <button id="btn">click me</button>
+        <h1>Config-schema example harness</h1>
+        <h2>Schema source code</h2>
+<pre><code class='haskell'>
+demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
+demoSpec = sectionsSpec "top-level configuration" $
+  do nums &lt;- optSection' "numbers" (oneOrList valuesSpec)
+             "Try out the number syntax"
+     bool &lt;- optSection' "yes-or-no" yesOrNoSpec
+             "Using atoms as enumerations"
+     str  &lt;- optSection "string"
+             "Strings use Haskell syntax"
+     xs   &lt;- reqSection' "coordinates" (oneOrList nestedMapSpec)
+             "Example required section of a nested map"
+     return (nums,bool,str,xs)
+
+nestedMapSpec :: ValueSpecs (Int, Int)
+nestedMapSpec = sectionsSpec "coord" $
+  do x &lt;- reqSection "x" "x coordinate"
+     y &lt;- reqSection "y" "y coordinate"
+     return (x,y)
+</code></pre>
+        <h2>Generated schema documentation</h2>
+        <pre><code class='haskell'>show (generateDocs demoSpec)</code></pre>
   </body>
+  <script language="javascript" src="runmain.js" defer></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </html>

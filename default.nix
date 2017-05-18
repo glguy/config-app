@@ -27,5 +27,5 @@ in
   pkgs.runCommand "app" { inherit app; } ''
     mkdir $out
     cp ${app}/index.html $out/index.html
-    cp ${app}/bin/config-app.jsexe/all.js $out/all.js
+    cp ${app}/bin/config-app.jsexe/*.js $out/
   ''
