@@ -2,7 +2,7 @@
 with pkgs.haskell.lib;
 let
   call = pkgs.haskell.packages.${compiler}.callCabal2nix;
-  kan-extensions = call "config-value" (pkgs.fetchFromGitHub {
+  kan-extensions = call "kan-extensions" (pkgs.fetchFromGitHub {
         owner = "ekmett";
         repo = "kan-extensions";
         rev = "eb77e603597fddf98998d8d27e8ffa18f3f42117";
