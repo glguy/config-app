@@ -20,7 +20,12 @@ let
         rev = "a5495ac688159a6c80bfb1508322db1126213494";
         sha256 = "0a3m9k2yy7hq1kzcwmdrxjrqb3dlja6cwrqxfrbbi3cyc2pn90p7";
   }) { inherit config-value kan-extensions; });
-in
- pkgs.haskell.packages.${compiler}.callPackage ./config-app.nix {
+ app = pkgs.haskell.packages.${compiler}.callPackage ./config-app.nix {
    inherit config-value config-schema;
- }
+ };
+in
+  pkgs.runCommand "app" { inherit app; } ''
+    mkdir $out
+    cp ${app}/index.html $out/index.html
+    cp ${app}/bin/config-app.jsexe/all.js $out/all.js
+  ''

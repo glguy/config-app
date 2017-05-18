@@ -13,4 +13,7 @@ mkDerivation {
   homepage = "galois.com";
   description = "Interactive configuration parsing";
   license = stdenv.lib.licenses.bsd3;
+  postInstall = ''
+    cp index.html $out
+  '';
 }
