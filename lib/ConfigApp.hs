@@ -87,7 +87,7 @@ jsMain = do
 
     syncPoint
 
-showLoadError :: LoadError -> String
+showLoadError :: LoadError Position -> String
 showLoadError (LoadError pos path problem) =
   showPosition pos ++
   T.unpack (T.concat (map (<>":") path)) ++
