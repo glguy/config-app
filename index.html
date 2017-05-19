@@ -18,7 +18,6 @@
          font-size: large;
       }
     </style>
-
   </head>
   <body>
           <div class="container">
@@ -27,10 +26,15 @@
         <a target="_blank" href='https://hackage.haskell.org/package/config-value'>config-value</a> language
         and the
         <a target="_blank" href='https://hackage.haskell.org/package/config-schema'>config-schema</a> schema
-        library. Try editing the configuration file below!
+        library. The source code for this project is available as
+	<a target="_blank" href='https://github.com/glguy/config-app'>config-app</a>.
+        Try editing the configuration file below!
 
 
         <h2>Schema source code</h2>
+        <p>He's an example of a schema used to specify what sorts of configuration files
+   	this demo expects and how they will be processed into a Haskell value</p>
+
 <pre class="language-haskell"><code>demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
 demoSpec = sectionsSpec "top-level configuration" $
   do nums &lt;- optSection' "numbers" (oneOrList valuesSpec)
@@ -50,27 +54,36 @@ nestedMapSpec = sectionsSpec "coord" $
      return (x,y)</code></pre>
 
         <h2>Generated documentation</h2>
+	<p>This documentation was generated from the specification above when you loaded the page.</p>
+
         <pre class="language-haskell"><code>show (generateDocs demoSpec)</code></pre>
         <pre class="z-depth-2" id='documentation'></pre>
 
         <h2>Interactive demonstration</h2>
+	<p>Try changing this configuration file to see various error messages. The file format is
+        described in detail in the
+	<a href='https://hackage.haskell.org/package/config-value-0.6.1/docs/Config.html'>module documentation</a>.
+	</p>
+	
+	<form>
         <div class="row">
                 <div class="input-field col s12">
-        <textarea class="materialize-textarea" id='configinput' rows='20' cols='40'>
+        <textarea class="materialize-textarea" id='configinput'>
 numbers: [1.0,2e5,-3]
 yes-or-no: yes
 string: "a string literal"
 coordinates:
   * x: 10
     y: 20
-  * x: 3
-    y: 5</textarea>
+  * {x: 3, y: 5}</textarea>
                   <label for='configinput'>Configuration file</label>
                 </div></div>
         <pre class="z-depth-2" id='output'></pre>
         <div class="row">
            <a class="waves-effect waves-light btn l2" id='parse'>Parse</a>
+           <input type='reset' class="waves-effect waves-light btn l2" id='reset' value='Reset' />
         </div>
+	</form>
         </div>
   </body>
   <script language="javascript" src="runmain.js" defer></script>

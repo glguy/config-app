@@ -15,6 +15,7 @@ import qualified GHCJS.DOM.HTMLTextAreaElement as TextArea
 
 import qualified Data.Text as T
 import Data.Semigroup
+import qualified Data.List.NonEmpty as NE
 import Data.Foldable
 
 import Config
@@ -59,21 +60,27 @@ jsMain = do
     button   <- getThing doc HTMLButtonElement   "parse"
     output   <- getThing doc HTMLPreElement      "output"
 
+    let selectError pos =
+          do let i = posIndex pos
+             TextArea.setSelectionRange textarea (Just i) (Just (i+1)) (Just ("forward" :: String))
+
     _ <- on button E.click $ do
         Just txt <- TextArea.getValue textarea
         case parse (txt <> "\n") of
 
           Left (ParseError pos e) ->
-            setInnerText output $ Just $ unlines
-              [ "Parser error"
-              , showPosition pos ++ e ]
+            do selectError pos
+               setInnerText output $ Just $ unlines
+                 [ "Parser error"
+                 , showPosition pos ++ e ]
 
           Right x ->
             case loadValue demoSpec x of
               Left es ->
-                 setInnerText output $ Just $ unlines
-                   $ "Schema error"
-                   : map showLoadError (toList es)
+                do selectError (let LoadError p _ _ = NE.head es in p)
+                   setInnerText output $ Just $ unlines
+                     $ "Schema error"
+                     : map showLoadError (toList es)
 
               Right y -> setInnerText output $ Just $ unlines
                            [ "Success" , show y ]
