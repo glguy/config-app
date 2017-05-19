@@ -17,7 +17,59 @@
          font-family: monospace;
          font-size: large;
       }
+      .header { color: #ee6e73; font-weight: 300; }
+      pre { position: relative; }
+      div.dynamic-input { position: relative; }
+      pre.language-haskell:before {
+          position: absolute;
+          padding: 1px 5px;
+          background: #e8e6e3;
+          top: 0;
+          right: 0;
+          font-family: "Roboto", sans-serif;
+          -webkit-font-smoothing: antialiased;
+          color: #555;
+          content: "haskell";
+          font-size: .9rem;
+          border: solid 1px rgba(51,51,51,0.12);
+          border-top: none;
+          border-left: none;
+      }
+      pre.dynamic-output:before {
+          position: absolute;
+          padding: 1px 5px;
+          background: #fff59d;
+          top: 0;
+          right: 0;
+          font-family: "Roboto", sans-serif;
+          -webkit-font-smoothing: antialiased;
+          color: #555;
+          content: "dynamic output";
+          font-size: .9rem;
+          border: solid 1px rgba(51,51,51,0.12);
+          border-top: none;
+          border-left: none;
+      }
+      div.dynamic-input:before {
+          position: absolute;
+          padding: 1px 5px;
+          background: #c8e6c9;
+          top: 0;
+          right: 0;
+          font-family: "Roboto", sans-serif;
+          -webkit-font-smoothing: antialiased;
+          color: #555;
+          content: "user input";
+          font-size: .9rem;
+          border: solid 1px rgba(51,51,51,0.12);
+          border-top: none;
+          border-left: none;
+      }
     </style>
+    <script>
+ 	// Work-around for bug in materialize with pre-poulated textarea
+        $(function() { $('.materialize-textarea').trigger('autoresize') })
+    </script>
   </head>
   <body>
           <div class="container">
@@ -30,12 +82,20 @@
 	<a target="_blank" href='https://github.com/glguy/config-app'>config-app</a>.
         Try editing the configuration file below!
 
+	<p>This demonstration is implemented in Haskell and is compiled to JavaScript using <a href='https://github.com/ghcjs/ghcjs'>GHCJS</a>.</p>
 
-        <h2>Schema source code</h2>
+
+	<div class='divider'></div>
+	<div class='section'>
+        <h2 class="header">Schema source code</h2>
         <p>He's an example of a schema used to specify what sorts of configuration files
    	this demo expects and how they will be processed into a Haskell value</p>
+	<p>Notice that this example is using the <strong><a href='https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#ghc-flag--XApplicativeDo'>ApplicativeDo</a></strong>
+	extension. The <code><a href='http://hackage.haskell.org/package/config-schema-0.3.1.1/docs/Config-Schema-Spec.html#t:SectionSpecs'>SectionSpecs</a></code> type only supports an <code><a href='http://hackage.haskell.org/package/base-4.9.0.0/docs/Control-Applicative.html#t:Applicative'>Applicative</a></code> instance.
 
-<pre class="language-haskell"><code>demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
+<div class="row">
+<div class="col s12">
+<pre class='language-haskell z-depth-2'><code class="language-haskell">demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
 demoSpec = sectionsSpec "top-level configuration" $
   do nums &lt;- optSection' "numbers" (oneOrList valuesSpec)
              "Try out the number syntax"
@@ -51,40 +111,52 @@ nestedMapSpec :: ValueSpecs (Int, Int)
 nestedMapSpec = sectionsSpec "coord" $
   do x &lt;- reqSection "x" "x coordinate"
      y &lt;- reqSection "y" "y coordinate"
-     return (x,y)</code></pre>
+     return (x,y)</code></pre></div>
+	</div>
+	</div>
 
-        <h2>Generated documentation</h2>
+	<div class='divider'></div>
+	<div class='section'>
+        <h2 class="header">Generated documentation</h2>
 	<p>This documentation was generated from the specification above when you loaded the page.</p>
 
-        <pre class="language-haskell"><code>show (generateDocs demoSpec)</code></pre>
-        <pre class="z-depth-2" id='documentation'></pre>
+        <pre class="z-depth-2 language-haskell"><code class="language-haskell">show (generateDocs demoSpec)</code></pre>
+        <pre class="dynamic-output card-panel yellow lighten-4 z-depth-2" id='documentation'></pre>
+	</div>
 
-        <h2>Interactive demonstration</h2>
+	<div class='divider'></div>
+	<div class='section'>
+        <h2 class="header">Interactive demonstration</h2>
 	<p>Try changing this configuration file to see various error messages. The file format is
         described in detail in the
-	<a href='https://hackage.haskell.org/package/config-value-0.6.1/docs/Config.html'>module documentation</a>.
-	</p>
+	<a href='https://hackage.haskell.org/package/config-value-0.6.1/docs/Config.html'>module documentation</a>.</p>
+
+	<p>Clicking parse will either generate a lexer error, parser error, schema error, or successfully
+	extracted Haskell value.</p>
 	
 	<form>
-        <div class="row">
-                <div class="input-field col s12">
-        <textarea class="materialize-textarea" id='configinput'>
-numbers: [1.0,2e5,-3]
+            <div class="dynamic-input green lighten-5 card-panel">
+                <div class="input-field">
+                    <textarea class="materialize-textarea" id='configinput'>
+numbers: [1.0,2e5,-3,0b10,0o7,0xf]
 yes-or-no: yes
 string: "a string literal"
 coordinates:
   * x: 10
     y: 20
-  * {x: 3, y: 5}</textarea>
-                  <label for='configinput'>Configuration file</label>
-                </div></div>
-        <pre class="z-depth-2" id='output'></pre>
-        <div class="row">
-           <a class="waves-effect waves-light btn l2" id='parse'>Parse</a>
-           <input type='reset' class="waves-effect waves-light btn l2" id='reset' value='Reset' />
-        </div>
-	</form>
-        </div>
+  * {x: 3, y: 5}
+-- line comments
+{- block
+   comments -}</textarea>
+                    <label for='configinput'>Configuration file</label>
+                </div>
+           </div>
+           <pre class="dynamic-output card-panel yellow lighten-4 z-depth-2" id='output'>Parser output</pre>
+           <div>
+               <a class="waves-effect waves-light btn l2" id='parse'>Parse</a>
+               <input type='reset' class="waves-effect waves-light btn l2" id='reset' value='Reset' />
+           </div>
+       </form>
   </body>
   <script language="javascript" src="runmain.js" defer></script>
 </html>

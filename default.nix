@@ -11,8 +11,8 @@ let
   config-value = call "config-value" (pkgs.fetchFromGitHub {
         owner = "glguy";
         repo = "config-value";
-        rev = "9f6960b2d49ef3c39660ce7e2ac8aa9893109cf9";
-        sha256 = "15hl129428n6mrklaqr3j2yxnbms9n4ikr9yp4s4vz6ir3zhh5r7";
+        rev = "448a01c919a01f2e7927aa9dd969360f32d88d63";
+        sha256 = "0h1wasf0cdpd8h1aacr45saanibz7crqq7lzfg538ani7yhps288";
   }) {};
   config-schema = dontHaddock (call "config-schema" (pkgs.fetchFromGitHub {
         owner = "glguy";
