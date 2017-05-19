@@ -38,6 +38,7 @@ library
                      , ghcjs-dom
                      , semigroupoids
                      , semigroups
+                     , pretty-show
                      , text
                      , transformers >= 0.4 && <0.6
   default-language:    Haskell2010

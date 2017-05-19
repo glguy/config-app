@@ -11,14 +11,14 @@ let
   config-value = call "config-value" (pkgs.fetchFromGitHub {
         owner = "glguy";
         repo = "config-value";
-        rev = "ecaa9de295457a60a767adbfa29eac2056f178bd";
-        sha256 = "01d6axwaj786np6c8xv9rg3vf3ynps0bkwv3964v2rif9flpw1h2";
+        rev = "9f6960b2d49ef3c39660ce7e2ac8aa9893109cf9";
+        sha256 = "15hl129428n6mrklaqr3j2yxnbms9n4ikr9yp4s4vz6ir3zhh5r7";
   }) {};
   config-schema = dontHaddock (call "config-schema" (pkgs.fetchFromGitHub {
         owner = "glguy";
         repo = "config-schema";
-        rev = "a5495ac688159a6c80bfb1508322db1126213494";
-        sha256 = "0a3m9k2yy7hq1kzcwmdrxjrqb3dlja6cwrqxfrbbi3cyc2pn90p7";
+        rev = "4ec0f7a5f5e5e174749143b5d7ebaa916b8394b0";
+        sha256 = "094zdw1llrl8qxis1zlqm4rqmkyi6hpiqivlqfrh0n3zm5x5vzjp";
   }) { inherit config-value kan-extensions; });
  app = pkgs.haskell.packages.${compiler}.callPackage ./config-app.nix {
    inherit config-value config-schema;

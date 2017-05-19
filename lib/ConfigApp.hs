@@ -10,13 +10,14 @@ import GHCJS.DOM.Types
 import GHCJS.DOM.NonElementParentNode
 import GHCJS.DOM.HTMLElement
 import GHCJS.DOM.EventM (on)
-import GHCJS.DOM.GlobalEventHandlers as E
+import qualified GHCJS.DOM.GlobalEventHandlers as E
 import qualified GHCJS.DOM.HTMLTextAreaElement as TextArea
 
 import qualified Data.Text as T
 import Data.Semigroup
 import qualified Data.List.NonEmpty as NE
 import Data.Foldable
+import Text.Show.Pretty (ppShow)
 
 import Config
 import Config.Schema
@@ -63,10 +64,11 @@ jsMain = do
     let selectError pos =
           do let i = posIndex pos
              TextArea.setSelectionRange textarea (Just i) (Just (i+1)) (Just ("forward" :: String))
+             focus textarea
 
     _ <- on button E.click $ do
         Just txt <- TextArea.getValue textarea
-        case parse (txt <> "\n") of
+        case parse txt of
 
           Left (ParseError pos e) ->
             do selectError pos
@@ -83,7 +85,7 @@ jsMain = do
                      : map showLoadError (toList es)
 
               Right y -> setInnerText output $ Just $ unlines
-                           [ "Success" , show y ]
+                           [ "Success" , ppShow y ]
 
     syncPoint
 

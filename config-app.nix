@@ -1,4 +1,4 @@
-{ mkDerivation, base, config-schema, config-value, ghcjs-base, ghcjs-dom, cabal-macosx
+{ mkDerivation, base, config-schema, config-value, ghcjs-base, ghcjs-dom, cabal-macosx, pretty-show
 , stdenv
 }:
 mkDerivation {
@@ -8,7 +8,7 @@ mkDerivation {
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
-    base config-schema config-value ghcjs-base ghcjs-dom cabal-macosx
+    base config-schema config-value ghcjs-base ghcjs-dom cabal-macosx pretty-show
   ];
   homepage = "galois.com";
   description = "Interactive configuration parsing";
