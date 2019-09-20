@@ -21,11 +21,12 @@ import Text.Show.Pretty (ppShow)
 
 import Config
 import Config.Schema
+import Config.Schema.Load.Error
 
 
-demoSpec :: ValueSpecs (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
+demoSpec :: ValueSpec (Maybe [Rational], Maybe Bool, Maybe T.Text, [(Int,Int)])
 demoSpec = sectionsSpec "top-level configuration" $
-  do nums <- optSection' "numbers" (oneOrList valuesSpec)
+  do nums <- optSection' "numbers" (oneOrList anySpec)
              "Try out the number syntax"
      bool <- optSection' "yes-or-no" yesOrNoSpec
              "Using atoms as enumerations"
@@ -35,7 +36,7 @@ demoSpec = sectionsSpec "top-level configuration" $
              "Example required section of a nested map"
      return (nums,bool,str,xs)
 
-nestedMapSpec :: ValueSpecs (Int, Int)
+nestedMapSpec :: ValueSpec (Int, Int)
 nestedMapSpec = sectionsSpec "coord" $
   do x <- reqSection "x" "x coordinate"
      y <- reqSection "y" "y coordinate"
@@ -44,11 +45,11 @@ nestedMapSpec = sectionsSpec "coord" $
 addDocumentation :: MonadJSM m => Document -> m ()
 addDocumentation doc =
   do pre <- getThing doc HTMLPreElement "documentation"
-     setInnerText pre (Just (show (generateDocs demoSpec)))
+     setInnerText pre (show (generateDocs demoSpec))
 
 getThing :: (IsGObject a, MonadDOM m) => Document -> (JSVal -> a) -> String -> m a
 getThing doc con eltId =
-  do Just e <- getElementById doc eltId
+  do ~(Just e) <- getElementById doc eltId
      return $! uncheckedCastTo con e
 
 jsMain :: JSM ()
@@ -67,39 +68,27 @@ jsMain = do
              focus textarea
 
     _ <- on button E.click $ do
-        Just txt <- TextArea.getValue textarea
+        txt <- TextArea.getValue textarea
         case parse txt of
 
           Left (ParseError pos e) ->
             do selectError pos
-               setInnerText output $ Just $ unlines
+               setInnerText output $ unlines
                  [ "Parser error"
                  , showPosition pos ++ e ]
 
           Right x ->
             case loadValue demoSpec x of
               Left es ->
-                do selectError (let LoadError p _ _ = NE.head es in p)
-                   setInnerText output $ Just $ unlines
-                     $ "Schema error"
-                     : map showLoadError (toList es)
+                do selectError (let ValueSpecMismatch p _ _ = es in p)
+                   setInnerText output $ unlines
+                     [ "Schema error"
+                     , show (prettyValueSpecMismatch es) ]
 
-              Right y -> setInnerText output $ Just $ unlines
+              Right y -> setInnerText output $ unlines
                            [ "Success" , ppShow y ]
 
     syncPoint
 
-showLoadError :: LoadError Position -> String
-showLoadError (LoadError pos path problem) =
-  showPosition pos ++
-  T.unpack (T.concat (map (<>":") path)) ++
-  " " ++
-  showProblem problem
-
 showPosition :: Position -> String
 showPosition pos = show (posLine pos) ++ ":" ++ show (posColumn pos) ++ ": "
-
-showProblem :: Problem -> String
-showProblem (MissingSection x) = "missing required section `" ++ T.unpack x ++ "`"
-showProblem (UnusedSection  x) = "unused section `"           ++ T.unpack x ++ "`"
-showProblem (SpecMismatch   x) = "expected "                  ++ T.unpack x

@@ -1,22 +1,22 @@
+cabal-version:       2.4
 name:                config-app
 version:             0.1.0.0
 synopsis:            Interactive configuration parsing
 homepage:            galois.com
-license:             BSD3
+license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Eric Mertens
 maintainer:          eric.mertens@galois.com
 category:            Web
 build-type:          Custom
 extra-source-files:  ChangeLog.md
-cabal-version:       >=1.10
 
 custom-setup
   setup-depends : base, Cabal, cabal-macosx
 
 executable config-app-wkwebview
   main-is:             WebKit.hs
-  build-depends:       base, config-app, jsaddle-wkwebview >=0.8 && <0.9
+  build-depends:       base, data-default, config-app, jsaddle-wkwebview ^>=0.9.6.0,
   if impl(ghcjs)
     buildable: False
   ghc-options: -threaded
@@ -32,13 +32,14 @@ executable config-app-js
 library
   exposed-modules:   ConfigApp
   hs-source-dirs:    lib
-  build-depends:       base >=4.8 && <4.11
-                     , config-schema >=0.4   && <0.5
-                     , config-value  >=0.6.1 && <0.7
-                     , ghcjs-dom
-                     , semigroupoids
-                     , semigroups
-                     , pretty-show
-                     , text
-                     , transformers >= 0.4 && <0.6
+  build-depends:
+    base >=4.8 && <4.14,
+    config-schema ^>=1.2.0.0,
+    config-value  ^>=0.7.0.0,
+    ghcjs-dom ^>=0.9.4.0,
+    semigroupoids,
+    semigroups,
+    pretty-show,
+    text,
+    transformers ^>= 0.5,
   default-language:    Haskell2010
