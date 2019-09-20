@@ -1,10 +1,24 @@
 { mkDerivation, base, config-schema, config-value, ghcjs-base, ghcjs-dom, cabal-macosx, pretty-show
-, stdenv
+, stdenv, lib
 }:
+with lib;
 mkDerivation {
   pname = "config-app";
   version = "0.1.0.0";
-  src = ./.;
+  src = cleanSourceWith {
+   src = ./.;
+   filter =
+    name: type: let baseName = baseNameOf (toString name); in (
+      (type == "regular" && hasSuffix ".hs" baseName) ||
+      (hasSuffix ".yaml" baseName) ||
+      (hasSuffix ".css" baseName) ||
+      (hasSuffix ".png" baseName) ||
+      (hasSuffix ".js" baseName) ||
+      (baseName == "README.md") ||
+      (baseName == "LICENSE") ||
+      (type == "directory" && baseName != "dist")
+    );
+  };
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
